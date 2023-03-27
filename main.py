@@ -15,7 +15,7 @@ db = {
     "Shaunak" : {
         "username": "Shaunak", 
         "full_name": "Shaunak Chakraborty", 
-        "email" : "shaunak@zs.com", 
+        "email" : "shaunak@gmail.com", 
         "hashed_password": "$2b$12$v/clkWbhpUNFLm7nZzEhPeLZCG0oKHQDfqWXr7v9eTfB1QwN9FQx2", 
         "disabled": False
     }
