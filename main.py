@@ -17,7 +17,24 @@ db = {
         "full_name": "Shaunak Chakraborty", 
         "email" : "shaunak@gmail.com", 
         "hashed_password": "$2b$12$v/clkWbhpUNFLm7nZzEhPeLZCG0oKHQDfqWXr7v9eTfB1QwN9FQx2", 
-        "disabled": False
+        "disabled": False, 
+        "skills": [
+            {
+                "id": 1001, 
+                "name": "AWS",
+                "is_certified": True
+            }, 
+            {
+                "id": 1002, 
+                "name": "QA",
+                "is_certified": False
+            }, 
+            {
+                "id": 1003, 
+                "name": "Data Analytics",
+                "is_certified": False
+            }
+        ]
     }
 }
 
@@ -32,7 +49,8 @@ class User(BaseModel):
     username: str 
     email : str or None = None 
     full_name: str or None = None 
-    disabled : bool or None = None 
+    disabled : bool or None = None
+    skills: list = [] 
 
 class UserInDB(User):
     hashed_password: str 
