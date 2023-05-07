@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, Response, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm 
 from pydantic import BaseModel
 from datetime import timedelta, datetime
@@ -166,6 +166,16 @@ async def read_user_item(
             {"description": "This is an amazing item that has a long description"}
         )
     return item
+
+
+@app.post("/submit")
+async def submit(request: Request):
+    content_type = request.headers['Content-Type']
+    if content_type == 'application/xml':
+        body = await request.body()
+        return Response(content=body, media_type="application/xml")
+    else:
+        raise HTTPException(status_code=400, detail=f'Content type {content_type} not supported')
 
 
 
