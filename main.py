@@ -130,6 +130,7 @@ app = FastAPI()
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     
     print("Inside login_for_access_token")
+    print(f"{form_data.scope}")
     user = authenticate_user(db, form_data.username, form_data.password)
     print(f"User : {user}")
 
