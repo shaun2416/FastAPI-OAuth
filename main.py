@@ -41,6 +41,25 @@ db = {
     }
 }
 
+
+ENDPOINT_TO_SCOPE_MAPPING = {
+
+    "/submit_restricted_scope":"write"
+
+}
+
+
+def validate_token_scope(endpoint, token):
+
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    token_scope = payload.get("scope")
+
+    if token_scope == "*":
+        return True
+    
+    return ENDPOINT_TO_SCOPE_MAPPING[endpoint] in token_scope.split()
+
+
 class Token(BaseModel):
     access_token: str 
     token_type: str 
@@ -159,9 +178,6 @@ async def read_own_items(current_user: User = Depends(get_current_active_user)):
     return { "res": [{"item_id": 1, "owner":current_user}]  }
 
 
-
-
-
 @app.get("/users/{user_id}/items/{item_id}")
 async def read_user_item(
     user_id: int, item_id: str, q: str | None = None, short: bool = False
@@ -185,6 +201,20 @@ async def submit(request: Request, current_user: User = Depends(get_current_acti
     else:
         raise HTTPException(status_code=400, detail=f'Content type {content_type} not supported')
 
+
+
+@app.post("/submit_restricted_scope")
+async def submit(request: Request, current_user: User = Depends(get_current_active_user), token: str = Depends(oauth2_scheme)):
+
+    if not validate_token_scope("/submit_restricted_scope", token):
+        raise HTTPException(status_code=403, detail=f'Token with write scope is required.')
+
+    content_type = request.headers['Content-Type']
+    if content_type == 'application/xml':
+        body = await request.body()
+        return Response(content=body, media_type="application/xml")
+    else:
+        raise HTTPException(status_code=400, detail=f'Content type {content_type} not supported')
 
 
 
