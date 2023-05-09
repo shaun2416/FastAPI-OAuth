@@ -171,6 +171,15 @@ async def read_user_item(
     return item
 
 
+@app.post("/submit")
+async def submit(request: Request, current_user: User = Depends(get_current_active_user)):
+    content_type = request.headers['Content-Type']
+    if content_type == 'application/xml':
+        body = await request.body()
+        return Response(content=body, media_type="application/xml")
+    else:
+        raise HTTPException(status_code=400, detail=f'Content type {content_type} not supported')
+
 
 
 
@@ -216,7 +225,7 @@ async def submit(request: Request, username: Annotated[str, Depends(get_current_
 
 
 
-# pwd_hash = get_password_hash("shaunak1234")
+# pwd_hash = get_password_hash("shaunak1234") 
 # print(pwd_hash)
 
 
