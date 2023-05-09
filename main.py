@@ -44,7 +44,8 @@ db = {
 
 ENDPOINT_TO_SCOPE_MAPPING = {
 
-    "/submit_restricted_scope":"write"
+    "/submit_restricted_scope":"write", 
+    "/submit_restricted_scope_json": "write"
 
 }
 
@@ -213,6 +214,20 @@ async def submit(request: Request, current_user: User = Depends(get_current_acti
     if content_type == 'application/xml':
         body = await request.body()
         return Response(content=body, media_type="application/xml")
+    else:
+        raise HTTPException(status_code=400, detail=f'Content type {content_type} not supported')
+
+
+@app.post("/submit_restricted_scope_json")
+async def submit(request: Request, current_user: User = Depends(get_current_active_user), token: str = Depends(oauth2_scheme)):
+
+    if not validate_token_scope("/submit_restricted_scope", token):
+        raise HTTPException(status_code=403, detail=f'Token with write scope is required.')
+
+    content_type = request.headers['Content-Type']
+    if content_type == 'application/json':
+        body = await request.body()
+        return Response(content=body, media_type="application/json")
     else:
         raise HTTPException(status_code=400, detail=f'Content type {content_type} not supported')
 
