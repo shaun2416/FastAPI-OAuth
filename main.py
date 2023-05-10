@@ -218,7 +218,7 @@ async def save_user_item(request: Request,
     
 ):
     body = await request.body()
-    item = {"item_id": item_id, "owner_id": user_id, "res": body}
+    item = {"item_id": item_id, "owner_id": user_id, "res": Response(content=body, media_type="application/json")}
     if queryParam1:
         item.update({"queryParam1": queryParam1})
     if not queryParam2:
