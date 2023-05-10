@@ -211,6 +211,26 @@ async def save_user_item(
     return item
 
 
+@app.post("/employees/{user_id}/items/{item_id}")
+async def save_user_item(request: Request,
+    user_id: int, item_id: str, queryParam1: str | None = None, queryParam2: str | None = None, 
+    current_user: User = Depends(get_current_active_user), 
+    
+):
+    body = await request.body()
+    item = {"item_id": item_id, "owner_id": user_id, "res": body}
+    if queryParam1:
+        item.update({"queryParam1": queryParam1})
+    if not queryParam2:
+        item.update(
+            {"description": queryParam2}
+        )
+    item["currentUserFullName"] = current_user.full_name
+    item["currentUserSkills"] = current_user.skills
+    return item
+
+
+
 
 
 @app.post("/submit")
