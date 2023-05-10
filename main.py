@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from datetime import timedelta, datetime
 from jose import JWTError, jwt 
 from passlib.context import CryptContext 
+import json
 
 
 SECRET_KEY = "6B58703273357638792F423F4528482B4D6250655368566D597133743677397A" 
@@ -218,7 +219,7 @@ async def save_user_item(request: Request,
     
 ):
     body = await request.body()
-    item = {"item_id": item_id, "owner_id": user_id, "res": Response(content=body, media_type="application/json")}
+    item = {"item_id": item_id, "owner_id": user_id, "res": json.loads(body)}
     if queryParam1:
         item.update({"queryParam1": queryParam1})
     if not queryParam2:
