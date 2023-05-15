@@ -147,12 +147,43 @@ async def get_current_active_user(current_user: UserInDB = Depends(get_current_u
 
 app = FastAPI()
 
+
+def validate_client_id_and_client_secret(client_id_bytes, client_secret_bytes):
+
+    correct_client_id_bytes = b"stanleyjobson"
+    is_correct_client_id = secrets.compare_digest(
+        client_id_bytes, correct_client_id_bytes
+    )
+
+    correct_client_secret_bytes = b"swordfish"
+    is_correct_client_secret = secrets.compare_digest(
+        client_secret_bytes, correct_client_secret_bytes
+    )
+
+    if not (is_correct_client_id and is_correct_client_secret):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect client id or secret",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    
+    return True
+
+
+
+
+
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     
     print("Inside login_for_access_token")
     print(form_data)
     print(form_data.scopes)
+
+    if form_data.client_id and form_data.client_secret:
+        current_client_id_bytes = bytes(form_data.client_id, 'utf-8')
+        current_client_secret_bytes = bytes(form_data.client_secret, 'utf-8')
+        validate_client_id_and_client_secret(current_client_id_bytes, current_client_secret_bytes)
 
     scope = " ".join(form_data.scopes) if form_data.scopes else "*"
 
