@@ -184,6 +184,9 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         current_client_id_bytes = bytes(form_data.client_id, 'utf-8')
         current_client_secret_bytes = bytes(form_data.client_secret, 'utf-8')
         validate_client_id_and_client_secret(current_client_id_bytes, current_client_secret_bytes)
+    
+
+    
 
     scope = " ".join(form_data.scopes) if form_data.scopes else "*"
 
