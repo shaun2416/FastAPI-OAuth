@@ -46,7 +46,8 @@ db = {
 ENDPOINT_TO_SCOPE_MAPPING = {
 
     "/submit_restricted_scope":"write", 
-    "/submit_restricted_scope_json": "write"
+    "/submit_restricted_scope_json": "write", 
+    "/submit_basicAuth": "write"
 
 }
 
@@ -167,7 +168,7 @@ def validate_client_id_and_client_secret(client_id_bytes, client_secret_bytes):
             headers={"WWW-Authenticate": "Basic"},
         )
     
-    return True
+    return Trueget_current_user
 
 
 
@@ -310,30 +311,30 @@ async def submit(request: Request, current_user: User = Depends(get_current_acti
 security = HTTPBasic()
 
 
-def get_current_username(
+def get_current_client_id(
     credentials: Annotated[HTTPBasicCredentials, Depends(security)]
 ):
-    current_username_bytes = credentials.username.encode("utf8")
-    correct_username_bytes = b"stanleyjobson"
-    is_correct_username = secrets.compare_digest(
-        current_username_bytes, correct_username_bytes
+    current_client_id_bytes = credentials.username.encode("utf8")
+    correct_client_id_bytes = b"stanleyjobson"
+    is_correct_client_id = secrets.compare_digest(
+        current_client_id_bytes, correct_client_id_bytes
     )
-    current_password_bytes = credentials.password.encode("utf8")
-    correct_password_bytes = b"swordfish"
-    is_correct_password = secrets.compare_digest(
-        current_password_bytes, correct_password_bytes
+    current_client_secret_bytes = credentials.password.encode("utf8")
+    correct_client_secret_bytes = b"swordfish"
+    is_correct_client_secret = secrets.compare_digest(
+        current_client_secret_bytes, correct_client_secret_bytes
     )
-    if not (is_correct_username and is_correct_password):
+    if not (is_correct_client_id and is_correct_client_secret):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+            detail="Incorrect client id or client secret",
             headers={"WWW-Authenticate": "Basic"},
         )
     return credentials.username
 
 
 @app.post("/token_password_grant_type_with_client_creds_as_basic_auth_header", response_model=Token)
-async def login_for_access_token_with_client_credentials_in_basic_auth_header(username: Annotated[str, Depends(get_current_username)], form_data: OAuth2PasswordRequestForm = Depends()):
+async def login_for_access_token_with_client_credentials_in_basic_auth_header(client_id: Annotated[str, Depends(get_current_client_id)], form_data: OAuth2PasswordRequestForm = Depends()):
     
     print("Inside login_for_access_token_with_client_credentials_in_basic_auth_header")
     print(form_data)
@@ -356,12 +357,20 @@ async def login_for_access_token_with_client_credentials_in_basic_auth_header(us
 
 
 @app.get("/users/me")
-def read_current_user(username: Annotated[str, Depends(get_current_username)]):
-    return {"username": username}
+def read_current_user( current_user: User = Depends(get_current_active_user)):
+    return {
+               "Full name": current_user.full_name, 
+               "Email": current_user.email, 
+            }
 
 
 @app.post("/submit_basicAuth")
-async def submit(request: Request, username: Annotated[str, Depends(get_current_username)]):
+async def submit(request: Request, current_user: User = Depends(get_current_active_user), 
+                token: str = Depends(oauth2_scheme)):
+        
+    if not validate_token_scope("/submit_basicAuth", token):
+        raise HTTPException(status_code=403, detail=f'Token with write scope is required.')
+
     content_type = request.headers['Content-Type']
     if content_type == 'application/xml':
         body = await request.body()
