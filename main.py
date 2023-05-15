@@ -305,7 +305,7 @@ def read_current_user(username: Annotated[str, Depends(get_current_username)]):
     return {"username": username}
 
 
-@app.post("/submit")
+@app.post("/submit_basicAuth")
 async def submit(request: Request, username: Annotated[str, Depends(get_current_username)]):
     content_type = request.headers['Content-Type']
     if content_type == 'application/xml':
