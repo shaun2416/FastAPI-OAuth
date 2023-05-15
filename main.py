@@ -416,8 +416,8 @@ async def patch_user_item(request: Request,
     current_user: User = Depends(get_current_active_user)
 ):
     body = await request.body()
-    print(body)
     body = json.dumps(xmltodict.parse(body))
+    print(body)
     item = {"item_id": item_id, "owner_id": user_id, "res": json.loads(body)}
     if queryParam1:
         item.update({"queryParam1": queryParam1})
