@@ -9,6 +9,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext 
 import json
 from dicttoxml import dicttoxml
+import xmltodict
 
 
 SECRET_KEY = "6B58703273357638792F423F4528482B4D6250655368566D597133743677397A" 
@@ -385,7 +386,16 @@ async def put_user_item(request: Request,
     current_user: User = Depends(get_current_active_user)
 ):
     body = await request.body()
+
+
+    body = json.dumps(xmltodict.parse(body))
+
+    print(body)
+
     item = {"item_id": item_id, "owner_id": user_id, "res": json.loads(body)}
+
+
+
     if queryParam1:
         item.update({"queryParam1": queryParam1})
     if queryParam2:
@@ -406,6 +416,8 @@ async def patch_user_item(request: Request,
     current_user: User = Depends(get_current_active_user)
 ):
     body = await request.body()
+    print(body)
+    body = json.dumps(xmltodict.parse(body))
     item = {"item_id": item_id, "owner_id": user_id, "res": json.loads(body)}
     if queryParam1:
         item.update({"queryParam1": queryParam1})
