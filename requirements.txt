@@ -26,3 +26,5 @@ typing_extensions==4.5.0
 uvicorn==0.21.1
 watchfiles==0.18.1
 websockets==10.4
+xmltodict==0.13.0
+dicttoxml==1.7.16

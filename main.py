@@ -8,6 +8,7 @@ from datetime import timedelta, datetime
 from jose import JWTError, jwt 
 from passlib.context import CryptContext 
 import json
+from dicttoxml import dicttoxml
 
 
 SECRET_KEY = "6B58703273357638792F423F4528482B4D6250655368566D597133743677397A" 
@@ -372,14 +373,34 @@ async def put_user_item(request: Request,
     item = {"item_id": item_id, "owner_id": user_id, "res": json.loads(body)}
     if queryParam1:
         item.update({"queryParam1": queryParam1})
-    if not queryParam2:
+    if queryParam2:
         item.update({"description": queryParam2})
     item["currentUserFullName"] = current_user.full_name
     item["currentUserSkills"] = current_user.skills
     return item
 
+@app.put("/xml/employees/{user_id}/items/{item_id}")
+async def put_user_item(request: Request,
+    user_id: int, item_id: str, queryParam1: str | None = None, queryParam2: str | None = None, 
+    current_user: User = Depends(get_current_active_user)
+):
+    body = await request.body()
+    item = {"item_id": item_id, "owner_id": user_id, "res": json.loads(body)}
+    if queryParam1:
+        item.update({"queryParam1": queryParam1})
+    if queryParam2:
+        item.update({"description": queryParam2})
+    item["currentUserFullName"] = current_user.full_name
+    item["currentUserSkills"] = current_user.skills
 
-@app.patch("/employees/{user_id}/items/{item_id}")
+    item = dicttoxml(item)
+    
+    return item
+
+
+
+
+@app.patch("/xml/employees/{user_id}/items/{item_id}")
 async def patch_user_item(request: Request,
     user_id: int, item_id: str, queryParam1: str | None = None, queryParam2: str | None = None, 
     current_user: User = Depends(get_current_active_user)
@@ -388,10 +409,14 @@ async def patch_user_item(request: Request,
     item = {"item_id": item_id, "owner_id": user_id, "res": json.loads(body)}
     if queryParam1:
         item.update({"queryParam1": queryParam1})
-    if not queryParam2:
+    if queryParam2:
         item.update({"description": queryParam2})
     item["currentUserFullName"] = current_user.full_name
     item["currentUserSkills"] = current_user.skills
+
+
+    item = dicttoxml(item)
+
     return item
 
 
