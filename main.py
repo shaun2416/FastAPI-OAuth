@@ -395,7 +395,7 @@ async def put_user_item(request: Request,
 
     item = dicttoxml(item)
     
-    return item
+    return Response(content=item, media_type="application/xml")
 
 
 
@@ -417,7 +417,7 @@ async def patch_user_item(request: Request,
 
     item = dicttoxml(item)
 
-    return item
+    return Response(content=item, media_type="application/xml")
 
 
 
