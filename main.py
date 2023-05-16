@@ -170,7 +170,7 @@ def validate_client_id_and_client_secret(client_id_bytes, client_secret_bytes):
             headers={"WWW-Authenticate": "Basic"},
         )
     
-    return Trueget_current_user
+    return True
 
 
 
