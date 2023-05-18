@@ -238,7 +238,7 @@ async def save_user_item(
     item = {"item_id": item_id, "owner_id": user_id}
     if queryParam1:
         item.update({"queryParam1": queryParam1})
-    if not queryParam2:
+    if queryParam2:
         item.update(
             {"description": queryParam2}
         )
@@ -257,7 +257,7 @@ async def save_user_item(request: Request,
     item = {"item_id": item_id, "owner_id": user_id, "res": json.loads(body)}
     if queryParam1:
         item.update({"queryParam1": queryParam1})
-    if not queryParam2:
+    if queryParam2:
         item.update(
             {"description": queryParam2}
         )
