@@ -210,9 +210,24 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user 
 
 
-@app.get("/users/me/items")
-async def read_own_items(current_user: User = Depends(get_current_active_user)):
-    return { "res": [{"item_id": 1, "owner":current_user}]  }
+@app.post("/users/me/items")
+async def post_items(current_user: User = Depends(get_current_active_user)):
+    return { "res": "Item added successfully"  }
+
+
+@app.put("/users/me/items")
+async def put_items(current_user: User = Depends(get_current_active_user)):
+    return { "res": "Item update success"  }
+
+
+@app.patch("/users/me/items")
+async def patch_items(current_user: User = Depends(get_current_active_user)):
+    return { "res": "Item patch success" }
+
+
+@app.delete("/users/me/items")
+async def delete_items(current_user: User = Depends(get_current_active_user)):
+    return True
 
 
 @app.get("/users/{user_id}/items/{item_id}")
